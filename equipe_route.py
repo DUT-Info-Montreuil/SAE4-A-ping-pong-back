@@ -1,3 +1,4 @@
+from bson import ObjectId
 from flask import Blueprint, jsonify, request
 from mongo_client import Mongo2Client
 
@@ -20,7 +21,7 @@ def get_all_equipes():
 def get_joueur_by_id(id_equipe):
     with Mongo2Client() as mongo_client:
         db_equipe = mongo_client.db['equipe']
-        equipe = db_equipe.find_one({'_id': id_equipe})
+        equipe = db_equipe.find_one({'_id': ObjectId(id_equipe)})
 
         if equipe:
             equipe['_id'] = str(equipe['_id'])
@@ -45,7 +46,7 @@ def add_equipes():
 def delete_equipe_by_id(id_equipe):
     with Mongo2Client() as mongo_client:
         db_equipe = mongo_client.db['equipe']
-        delete_equipe = db_equipe.delete_one({'_id': id_equipe})
+        delete_equipe = db_equipe.delete_one({'_id': ObjectId(id_equipe)})
 
         if delete_equipe:
             return jsonify({"True": "La suppression a bien été réalisée."})
@@ -59,7 +60,7 @@ def update_equipe_by_id(id_equipe):
 
     with Mongo2Client() as mongo_client:
         db_equipe = mongo_client.db['equipe']
-        update_equipe = db_equipe.update_one({'_id': id_equipe}, {'$set': data})
+        update_equipe = db_equipe.update_one({'_id': ObjectId(id_equipe)}, {'$set': data})
 
         if update_equipe.modified_count > 0:
             return jsonify({"True": "La mise à jour a bien été réalisée."})

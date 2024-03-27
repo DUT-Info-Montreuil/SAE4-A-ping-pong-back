@@ -45,7 +45,7 @@ def add_match():
 def delete_match_by_id(id_match):
     with Mongo2Client() as mongo_client:
         db_match = mongo_client.db['match']
-        delete_match = db_match.delete_one({'_id': id_match})
+        delete_match = db_match.delete_one({'_id': ObjectId(id_match)})
 
         if delete_match:
             return jsonify({"True": "La suppression a bien été réalisée."})
@@ -59,7 +59,7 @@ def update_match_by_id(id_match):
 
     with Mongo2Client() as mongo_client:
         db_match = mongo_client.db['match']
-        update_match = db_match.update_one({'_id': id_match}, {'$set': data})
+        update_match = db_match.update_one({'_id': ObjectId(id_match)}, {'$set': data})
 
         if update_match.modified_count > 0:
             return jsonify({"True": "La mise à jour a bien été réalisée."})
