@@ -9,8 +9,11 @@ def get_all_equipes():
     with Mongo2Client() as mongo_client:
         db_equipe = mongo_client.db['equipe']
         equipes = db_equipe.find()
-        equipes_dict = [equipe for equipe in equipes]
-        return jsonify(equipes_dict)
+        equipes_list = []
+        for equipe in equipes:
+            equipe['_id'] = str(equipe['_id'])
+            equipes_list.append(equipe)
+        return jsonify(equipes_list)
 
 
 @equipes_bp.route('/<int:id_equipe>', methods=['GET'])
@@ -20,6 +23,7 @@ def get_joueur_by_id(id_equipe):
         equipe = db_equipe.find_one({'_id': id_equipe})
 
         if equipe:
+            equipe['_id'] = str(equipe['_id'])
             return jsonify(equipe)
         else:
             return jsonify({'erreur': f"l'équipe d'identifiant {id_equipe} n'existe pas."}), 404

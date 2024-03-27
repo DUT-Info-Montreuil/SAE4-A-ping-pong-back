@@ -1,3 +1,4 @@
+from bson import ObjectId
 from flask import Blueprint, jsonify, request
 from mongo_client import Mongo2Client
 
@@ -9,16 +10,20 @@ def get_all_matchs():
     with Mongo2Client() as mongo_client:
         db_match = mongo_client.db['match']
         matchs = db_match.find()
-        matchs_dict = [match for match in matchs]
-    return jsonify(matchs_dict)
+        match_list = []
+        for match in matchs:
+            match['_id'] = str(match['_id'])
+            match_list.append(match)
+        return jsonify(match_list)
 
 
-@matchs_bp.route('/<int:id_match>', methods=['GET'])
+@matchs_bp.route('/<string:id_match>', methods=['GET'])
 def get_match_by_id(id_match):
     with Mongo2Client() as mongo_client:
         db_match = mongo_client.db['match']
-        match = db_match.find_one({'_id': id_match})
+        match = db_match.find_one({'_id': ObjectId(id_match)})
         if match:
+            match['_id'] = str(match['_id'])
             return jsonify(match)
         else:
             return jsonify({'erreur': f"le match d'identifiant {id_match} n'existe pas."}), 404
