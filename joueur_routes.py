@@ -78,7 +78,6 @@ def delete_joueur_by_id(id_joueur):
 @joueurs_bp.route('/<string:id_joueur>', methods=['PUT'])
 def update_joueur_by_id(id_joueur):
     data = request.json
-
     with Mongo2Client() as mongo_client:
         db_joueur = mongo_client.db['joueur']
         update_joueur = db_joueur.update_one({'_id': ObjectId(id_joueur)}, {'$set': data})
