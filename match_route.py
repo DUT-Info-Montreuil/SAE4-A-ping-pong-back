@@ -41,7 +41,7 @@ def add_match():
             return jsonify({"False": "Erreur lors de l'insertion"}), 404
 
 
-@matchs_bp.route('/<int:id_match>', methods=['DELETE'])
+@matchs_bp.route('/<string:id_match>', methods=['DELETE'])
 def delete_match_by_id(id_match):
     with Mongo2Client() as mongo_client:
         db_match = mongo_client.db['match']
@@ -53,7 +53,7 @@ def delete_match_by_id(id_match):
             return jsonify({'False': 'Erreur lors de la suppression'}), 404
 
 
-@matchs_bp.route('/<int:id_match>', methods=['PUT'])
+@matchs_bp.route('/<string:id_match>', methods=['PUT'])
 def update_match_by_id(id_match):
     data = request.json
 

@@ -2,7 +2,7 @@ from bson import ObjectId
 from flask import Blueprint, jsonify, request
 from mongo_client import Mongo2Client
 
-equipement_tournoi_bp = Blueprint('equipement_tournoi', __name__)
+equipement_tournoi_bp = Blueprint('equipement', __name__)
 
 
 @equipement_tournoi_bp.route('/', methods=['GET'])
@@ -17,8 +17,8 @@ def get_all_equipements_tournoi():
         return jsonify(equipemement_list)
 
 
-@equipement_tournoi_bp.route('/<int:id_equipement_tournoi>', methods=['GET'])
-def get_tournoi_by_id(id_equipement_tournoi):
+@equipement_tournoi_bp.route('/<string:id_equipement_tournoi>', methods=['GET'])
+def get_equipement_by_id(id_equipement_tournoi):
     with Mongo2Client() as mongo_client:
         db_equipement = mongo_client.db['equipement_tournoi']
         equipement_tournoi = db_equipement.find_one({'_id': ObjectId(id_equipement_tournoi)})
@@ -31,7 +31,7 @@ def get_tournoi_by_id(id_equipement_tournoi):
 
 
 @equipement_tournoi_bp.route('/', methods=['POST'])
-def add_joueur():
+def add_equipement():
     data = request.get_json()
     with Mongo2Client() as mongo_client:
         db_equipement = mongo_client.db['equipement_tournoi']
@@ -42,19 +42,19 @@ def add_joueur():
             return jsonify({"False": "Erreur lors de l'insertion"}), 404
 
 
-@equipement_tournoi_bp.route('/<int:id_equipement_tournoi>', methods=['DELETE'])
-def delete_joueur_by_id(id_equipement_tournoi):
+@equipement_tournoi_bp.route('/<string:id_equipement_tournoi>', methods=['DELETE'])
+def delete_equipement_by_id(id_equipement_tournoi):
     with Mongo2Client() as mongo_client:
-        db_equipement = mongo_client.db['equipment_tournoi']
+        db_equipement = mongo_client.db['equipement_tournoi']
         delete_equipement_tournoi = db_equipement.delete_one({'_id': ObjectId(id_equipement_tournoi)})
 
-        if delete_equipement_tournoi.modified_count > 0:
+        if delete_equipement_tournoi:
             return jsonify({"True": "La suppression a bien été réalisée."})
         else:
             return jsonify({'False': 'Erreur lors de la suppression'}), 404
 
 
-@equipement_tournoi_bp.route('/<int:id_equipement_tournoi>', methods=['PUT'])
+@equipement_tournoi_bp.route('/<string:id_equipement_tournoi>', methods=['PUT'])
 def update_tournoi_by_id(id_equipement_tournoi):
     data = request.json
 
