@@ -4,7 +4,7 @@ from pymongo.errors import ConnectionFailure
 
 class Mongo2Client:
 
-    def __init__(self, host='localhost', port=27017, db_name='Tournoi_Ping-pong', username='luc', password=None):
+    def __init__(self, host='localhost', port=27017, db_name='Tournoi_Ping-pong', username='juba', password=None):
         try:
             if username and password:
                 uri = f"mongodb://{username}:{password}@{host}:{port}/{db_name}"

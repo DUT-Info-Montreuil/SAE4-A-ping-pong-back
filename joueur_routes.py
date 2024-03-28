@@ -1,3 +1,6 @@
+import csv
+import io
+
 from flask import Blueprint, jsonify, request
 from flask_expects_json import expects_json
 from mongo_client import Mongo2Client
@@ -86,3 +89,54 @@ def update_joueur_by_id(id_joueur):
             return jsonify({"message": "La mise à jour a bien été réalisée."})
         else:
             return jsonify({'message': 'Erreur lors de la mise à jour'}), 404
+
+@joueurs_bp.route('/add_fichier', methods=['PUT'])
+def add_joueurs_fichier():
+    # Obtenir l'instance du client MongoDB
+    print("Fichier reçu:", "fichier" in request.files)
+    mongo_client = Mongo2Client(db_name='Tournoi_Ping-pong')
+    fichier = request.files['fichier']
+
+    if not fichier:
+        mongo_client.close()
+        return jsonify({"succès": False, "message": "Aucun fichier fourni"}), 400
+    try:
+        if not fichier.filename.endswith('.csv'):
+            mongo_client.close()
+            return jsonify({"succès": False, "message": "Le fichier n'est pas un CSV"}), 400
+
+
+        fichier.seek(0)
+        joueurs = []
+        for row in csv.DictReader(io.StringIO(fichier.read().decode('utf-8'))):
+            categorie = [{'age': row['Age']}, {'niveau': row['Niveau']}]
+            try:
+                points = int(row['Points'])
+            except ValueError:
+                points = 0
+            joueur = {
+                'prenom': row['Prénom'],
+                'nom': row['Nom'],
+                'sexe': row['Sexe'],
+                'categorie': categorie,
+                'point': points
+            }
+            joueurs.append(joueur)
+
+    except Exception as e:
+        mongo_client.close()
+        return jsonify({"succès": False, "message": "Erreur lors de la lecture du fichier", "erreur": str(e)}), 400
+
+
+    try:
+        if joueurs:
+            resultat = mongo_client.db['joueur'].insert_many(joueurs)
+            ids_insertion = [str(id_) for id_ in resultat.inserted_ids]
+            mongo_client.close()
+            return jsonify({"succès": True, "ids_insertion": ids_insertion}), 201
+        else:
+            mongo_client.close()
+            return jsonify({"succès": False, "message": "Le fichier CSV est vide"}), 400
+    except Exception as e:
+        mongo_client.close()
+        return jsonify({"succès": False, "message": "Erreur lors de l'insertion des joueurs", "erreur": str(e)}), 500

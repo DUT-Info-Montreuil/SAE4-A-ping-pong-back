@@ -1,3 +1,4 @@
+from bson import ObjectId
 from flask import Blueprint, jsonify, request
 from mongo_client import Mongo2Client
 
@@ -9,17 +10,21 @@ def get_all_equipements_tournoi():
     with Mongo2Client() as mongo_client:
         db_equipement_tournoi = mongo_client.db['equipement_tournoi']
         equipements_tournoi = db_equipement_tournoi.find()
-        equipement_dict = [equipement for equipement in equipements_tournoi]
-        return jsonify(equipement_dict)
+        equipemement_list = []
+        for equipement in equipements_tournoi:
+            equipement['_id'] = str(equipement['_id'])
+            equipemement_list.append(equipement)
+        return jsonify(equipemement_list)
 
 
 @equipement_tournoi_bp.route('/<int:id_equipement_tournoi>', methods=['GET'])
 def get_tournoi_by_id(id_equipement_tournoi):
     with Mongo2Client() as mongo_client:
         db_equipement = mongo_client.db['equipement_tournoi']
-        equipement_tournoi = db_equipement.find_one({'_id': id_equipement_tournoi})
+        equipement_tournoi = db_equipement.find_one({'_id': ObjectId(id_equipement_tournoi)})
 
         if equipement_tournoi:
+            equipement_tournoi['_id'] = str(equipement_tournoi['_id'])
             return jsonify(equipement_tournoi)
         else:
             return jsonify({'erreur': f"les équipements d'identifiant {id_equipement_tournoi} n'existe pas."}), 404
@@ -41,7 +46,7 @@ def add_joueur():
 def delete_joueur_by_id(id_equipement_tournoi):
     with Mongo2Client() as mongo_client:
         db_equipement = mongo_client.db['equipment_tournoi']
-        delete_equipement_tournoi = db_equipement.delete_one({'_id': id_equipement_tournoi})
+        delete_equipement_tournoi = db_equipement.delete_one({'_id': ObjectId(id_equipement_tournoi)})
 
         if delete_equipement_tournoi.modified_count > 0:
             return jsonify({"True": "La suppression a bien été réalisée."})
@@ -55,7 +60,7 @@ def update_tournoi_by_id(id_equipement_tournoi):
 
     with Mongo2Client() as mongo_client:
         db_equipement_tournoi = mongo_client.db['equipement_tournoi']
-        update_equipement_tournoi = db_equipement_tournoi.update_one({'_id': id_equipement_tournoi}, {'$set': data})
+        update_equipement_tournoi = db_equipement_tournoi.update_one({'_id': ObjectId(id_equipement_tournoi)}, {'$set': data})
 
         if update_equipement_tournoi.modified_count > 0:
             return jsonify({"True": "La mise à jour a bien été réalisée."})
