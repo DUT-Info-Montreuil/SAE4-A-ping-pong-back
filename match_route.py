@@ -76,7 +76,29 @@ def update_match_by_id(id_match):
 
 @matchs_bp.route('/random_match', methods=['POST'])
 def create_random_matches():
-    joueurs_tournoi = request.json
+    data = request.json
+
+    joueurs_tournoi = data.get('joueurs', [])
+    equipement = data.get('equipement')
+    duree_tournoi = int(data.get('dureeTournoi'))
+
+    if len(joueurs_tournoi) % 2 != 0:
+        return jsonify({"error": "Nombre impair de joueurs."}), 400
+
+    if not equipement:
+        return jsonify({"error": "Équipement non fourni."}), 400
+
+    if equipement['table']['quantite'] < duree_tournoi / 5:
+        return jsonify({"error": "Nombre de tables insuffisant pour la durée du tournoi."}), 400
+
+    if equipement['fillet']['quantite'] < duree_tournoi / 5:
+        return jsonify({"error": "Nombre de filets insuffisant pour la durée du tournoi."}), 400
+
+    if equipement['marqueur']['quantite'] < 1:
+        return jsonify({"error": "Nombre de marqueurs insuffisant pour la durée du tournoi."}), 400
+
+    if equipement['balle']['quantite'] < 1:
+        return jsonify({"error": "Nombre de balles insuffisant pour la durée du tournoi."}), 400
 
     random.shuffle(joueurs_tournoi)
 
@@ -86,7 +108,8 @@ def create_random_matches():
             match = {
                 'joueur_1': joueurs_tournoi[i],
                 'joueur_2': joueurs_tournoi[i + 1],
-                'duree': 5
+                'duree': 5,
+                'resultat': 0
             }
             liste_matchs.append(match)
 
