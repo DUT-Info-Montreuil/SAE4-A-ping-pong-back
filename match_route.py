@@ -66,4 +66,3 @@ def update_match_by_id(id_match):
         else:
             return jsonify({'False': 'Erreur lors de la mise à jour'}), 404
 
-
