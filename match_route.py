@@ -82,6 +82,9 @@ def create_random_matches():
     equipement = data.get('equipement')
     duree_tournoi = int(data.get('dureeTournoi'))
 
+    if len(joueurs_tournoi) == 0:
+        return jsonify({"error": "Aucun joueur(s) assigné pour un match."}), 400
+
     if len(joueurs_tournoi) % 2 != 0:
         return jsonify({"error": "Nombre impair de joueurs."}), 400
 
