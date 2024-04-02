@@ -3,7 +3,6 @@ from flask_expects_json import expects_json
 from mongo_client import Mongo2Client
 from bson import ObjectId
 
-
 joueurs_bp = Blueprint('joueur_bp', __name__)
 
 joueur_schema = {
@@ -86,3 +85,30 @@ def update_joueur_by_id(id_joueur):
             return jsonify({"message": "La mise à jour a bien été réalisée."})
         else:
             return jsonify({'message': 'Erreur lors de la mise à jour'}), 404
+
+
+@joueurs_bp.route('/filtre', methods=['GET'])
+def get_joueurs_filtre():
+    niveau = request.args.get('niveau', 'Mixte')
+    # age_categorie = request.args.get('age_categorie', 'Mixte')
+
+    query = {}
+
+    if niveau != 'Mixte':
+        query['categorie.niveau'] = niveau
+    """
+    if age_categorie != 'Mixte':
+        if age_categorie == 'Senior':
+            query['categorie.age'] = {'$gte': 60}
+        elif age_categorie == 'Junior':
+            query['categorie.age'] = {'$lt': 18}
+    """
+
+    with Mongo2Client() as mongo_client:
+        db_joueur = mongo_client.db['joueur']
+        joueurs = db_joueur.find(query)
+        joueurs_list = []
+        for joueur in joueurs:
+            joueur['_id'] = str(joueur['_id'])
+            joueurs_list.append(joueur)
+        return jsonify(joueurs_list)
