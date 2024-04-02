@@ -2,7 +2,7 @@ from bson import ObjectId
 from flask import Blueprint, jsonify, request
 from mongo_client import Mongo2Client
 
-equipement_tournoi_bp = Blueprint('equipement_tournoi', __name__)
+equipement_tournoi_bp = Blueprint('equipement', __name__)
 
 
 @equipement_tournoi_bp.route('/', methods=['GET'])
@@ -30,8 +30,8 @@ def get_tournoi_by_id(id_equipement_tournoi):
             return jsonify({'erreur': f"les équipements d'identifiant {id_equipement_tournoi} n'existe pas."}), 404
 
 
-@equipement_tournoi_bp.route('/', methods=['POST'])
-def add_joueur():
+@equipement_tournoi_bp.route('/ajouterEquipement', methods=['POST'])
+def add_equipement():
     data = request.get_json()
     with Mongo2Client() as mongo_client:
         db_equipement = mongo_client.db['equipement_tournoi']
