@@ -6,7 +6,6 @@ from flask_expects_json import expects_json
 from mongo_client import Mongo2Client
 from bson import ObjectId
 
-
 joueurs_bp = Blueprint('joueur_bp', __name__)
 
 joueur_schema = {
@@ -90,6 +89,7 @@ def update_joueur_by_id(id_joueur):
         else:
             return jsonify({'message': 'Erreur lors de la mise à jour'}), 404
 
+
 @joueurs_bp.route('/add_fichier', methods=['PUT'])
 def add_joueurs_fichier():
     # Obtenir l'instance du client MongoDB
@@ -104,7 +104,6 @@ def add_joueurs_fichier():
         if not fichier.filename.endswith('.csv'):
             mongo_client.close()
             return jsonify({"succès": False, "message": "Le fichier n'est pas un CSV"}), 400
-
 
         fichier.seek(0)
         joueurs = []
@@ -126,7 +125,6 @@ def add_joueurs_fichier():
     except Exception as e:
         mongo_client.close()
         return jsonify({"succès": False, "message": "Erreur lors de la lecture du fichier", "erreur": str(e)}), 400
-
 
     try:
         if joueurs:
