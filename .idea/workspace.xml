@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="1a35cd69-a285-492d-8547-59f63d690058" name="Changes" comment="ajout d'un schéma qui va permettre lors d'une insertion de vérifier si les données envoyé respecte le schéma">
+    <list default="true" id="1a35cd69-a285-492d-8547-59f63d690058" name="Changes" comment="ajout de condition pour la liste de joueur si il est vide">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/joueur_routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/joueur_routes.py" afterDir="false" />
     </list>
@@ -22,6 +22,11 @@
     </option>
   </component>
   <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="match_aleatoire" />
+      </map>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="ProjectColorInfo">{
@@ -40,7 +45,7 @@
     &quot;Python.test.executor&quot;: &quot;Run&quot;,
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;filtre__joueur&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
@@ -160,7 +165,15 @@
       <workItem from="1711447232900" duration="1642000" />
       <workItem from="1711479220809" duration="2381000" />
       <workItem from="1711481624951" duration="4279000" />
-      <workItem from="1711526925531" duration="912000" />
+      <workItem from="1711526925531" duration="8584000" />
+      <workItem from="1711624713003" duration="1365000" />
+      <workItem from="1711630000476" duration="2473000" />
+      <workItem from="1711636574663" duration="24000" />
+      <workItem from="1711904176317" duration="5430000" />
+      <workItem from="1711988119261" duration="6758000" />
+      <workItem from="1712036195972" duration="1479000" />
+      <workItem from="1712041352580" duration="1450000" />
+      <workItem from="1712043817733" duration="317000" />
     </task>
     <task id="LOCAL-00001" summary="init commit">
       <option name="closed" value="true" />
@@ -186,7 +199,55 @@
       <option name="project" value="LOCAL" />
       <updated>1711485287187</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="correction des _id en object id">
+      <option name="closed" value="true" />
+      <created>1711536878487</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1711536878487</updated>
+    </task>
+    <task id="LOCAL-00005" summary="ajout des ObjetId() manquant">
+      <option name="closed" value="true" />
+      <created>1711536968867</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1711536968867</updated>
+    </task>
+    <task id="LOCAL-00006" summary="correction nom méthode et type de paramètre">
+      <option name="closed" value="true" />
+      <created>1711636539134</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1711636539135</updated>
+    </task>
+    <task id="LOCAL-00007" summary="création d'une route pour générer des matchs aléatoire en prenant une liste de joueur.">
+      <option name="closed" value="true" />
+      <created>1711988605597</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1711988605597</updated>
+    </task>
+    <task id="LOCAL-00008" summary="ajout des conditions avec les équipements de tournoi, ou il faut au moins un nombre d'équipement en fonction de la durée du tournoi sinon ça renvoie une erreur 400.">
+      <option name="closed" value="true" />
+      <created>1711993792341</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1711993792341</updated>
+    </task>
+    <task id="LOCAL-00009" summary="ajout de condition pour la liste de joueur si il est vide">
+      <option name="closed" value="true" />
+      <created>1712042489342</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1712042489342</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -196,11 +257,17 @@
     <MESSAGE value="init commit" />
     <MESSAGE value="changement des _id en objectId" />
     <MESSAGE value="ajout d'un schéma qui va permettre lors d'une insertion de vérifier si les données envoyé respecte le schéma" />
-    <option name="LAST_COMMIT_MESSAGE" value="ajout d'un schéma qui va permettre lors d'une insertion de vérifier si les données envoyé respecte le schéma" />
+    <MESSAGE value="correction des _id en object id" />
+    <MESSAGE value="ajout des ObjetId() manquant" />
+    <MESSAGE value="correction nom méthode et type de paramètre" />
+    <MESSAGE value="création d'une route pour générer des matchs aléatoire en prenant une liste de joueur." />
+    <MESSAGE value="ajout des conditions avec les équipements de tournoi, ou il faut au moins un nombre d'équipement en fonction de la durée du tournoi sinon ça renvoie une erreur 400." />
+    <MESSAGE value="ajout de condition pour la liste de joueur si il est vide" />
+    <option name="LAST_COMMIT_MESSAGE" value="ajout de condition pour la liste de joueur si il est vide" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/backend_python$mongo_client.coverage" NAME="mongo_client Coverage Results" MODIFIED="1711482332174" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/backend_python$Flask__app_py_.coverage" NAME="Flask (app.py) Coverage Results" MODIFIED="1711485178813" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
+    <SUITE FILE_PATH="coverage/backend_python$Flask__app_py_.coverage" NAME="Flask (app.py) Coverage Results" MODIFIED="1712041365606" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
     <SUITE FILE_PATH="coverage/backend_python$test.coverage" NAME="test Coverage Results" MODIFIED="1711479521973" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>
