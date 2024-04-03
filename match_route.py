@@ -112,7 +112,9 @@ def create_random_matches():
                 'joueur_1': joueurs_tournoi[i],
                 'joueur_2': joueurs_tournoi[i + 1],
                 'duree': 5,
-                'resultat': 0
+                'resultat': 0,
+                'scoreJ1': 0,
+                'scoreJ2': 0
             }
             liste_matchs.append(match)
 
