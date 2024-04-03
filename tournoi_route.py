@@ -123,6 +123,7 @@ def finir_match_tournoi(id_tournoi, id_match):
 
     with Mongo2Client() as mongo_client:
         db_tournoi = mongo_client.db['tournoi']
+        db_joueur = mongo_client.db['joueur']
         tournoi = db_tournoi.find_one({'_id': ObjectId(id_tournoi)})
         if not tournoi:
             return jsonify({'message': 'Tournoi non trouvé.'}), 404
@@ -136,15 +137,25 @@ def finir_match_tournoi(id_tournoi, id_match):
                 match['resultat'] = 1
 
                 if scoreJ1 > scoreJ2:
-                    match['vainqueur'] = match['joueur_1']['nom'] + ' ' + match['joueur_1']['prenom']
+                    match['vainqueur'] = match['joueur_1']
                 else:
-                    match['vainqueur'] = match['joueur_2']['nom'] + ' ' + match['joueur_2']['prenom']
+                    match['vainqueur'] = match['joueur_2']
 
                 updated_match = match
 
         if updated_match:
-            db_tournoi.update_one({'_id': ObjectId(id_tournoi), 'matchs._id': updated_match['_id']},
-                                  {'$set': {'matchs.$': updated_match}})
-            return jsonify({"message": "Match terminé avec succès.", "vainqueur": updated_match['vainqueur']})
+            db_tournoi.update_one({'_id': ObjectId(id_tournoi), 'matchs._id': updated_match['_id']}, {'$set': {'matchs.$': updated_match}})
+
+            joueur_1 = updated_match.get('joueur_1', {})
+            joueur_2 = updated_match.get('joueur_2', {})
+            joueur_1_score_actuel = joueur_1.get('point')
+            joueur_2_score_actuel = joueur_2.get('point')
+
+            db_tournoi.update_one({'_id': ObjectId(id_tournoi), 'joueurs._id': ObjectId(joueur_1['_id'])}, {'$inc': {'joueurs.$.point': joueur_1_score_actuel + scoreJ1}})
+            db_joueur.update_one({'_id': ObjectId(joueur_1['_id'])}, {'$inc': {'point': joueur_1_score_actuel + scoreJ1}})
+            db_tournoi.update_one({'_id': ObjectId(id_tournoi), 'joueurs._id': ObjectId(joueur_2['_id'])}, {'$inc': {'joueurs.$.point': joueur_2_score_actuel + scoreJ2}})
+            db_joueur.update_one({'_id': ObjectId(joueur_2['_id'])}, {'$inc': {'point': joueur_2_score_actuel + scoreJ2}})
+
+            return jsonify({"message": "Match terminé avec succès."})
         else:
             return jsonify({'message': f"Match avec l'id {id_match} non trouvé"}), 404
