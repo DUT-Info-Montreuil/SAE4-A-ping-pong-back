@@ -55,7 +55,7 @@ def delete_equipement_by_id(id_equipement_tournoi):
 
 
 @equipement_tournoi_bp.route('/<string:id_equipement_tournoi>', methods=['PUT'])
-def update_tournoi_by_id(id_equipement_tournoi):
+def update_equipement_by_id(id_equipement_tournoi):
     data = request.json
 
     with Mongo2Client() as mongo_client:

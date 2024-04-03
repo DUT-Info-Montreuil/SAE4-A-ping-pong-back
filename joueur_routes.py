@@ -143,19 +143,11 @@ def add_joueurs_fichier():
 @joueurs_bp.route('/filtre', methods=['GET'])
 def get_joueurs_filtre():
     niveau = request.args.get('niveau', 'Mixte')
-    # age_categorie = request.args.get('age_categorie', 'Mixte')
 
     query = {}
 
     if niveau != 'Mixte':
         query['categorie.niveau'] = niveau
-    """
-    if age_categorie != 'Mixte':
-        if age_categorie == 'Senior':
-            query['categorie.age'] = {'$gte': 60}
-        elif age_categorie == 'Junior':
-            query['categorie.age'] = {'$lt': 18}
-    """
 
     with Mongo2Client() as mongo_client:
         db_joueur = mongo_client.db['joueur']

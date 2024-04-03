@@ -18,7 +18,7 @@ def get_all_equipes():
 
 
 @equipes_bp.route('/<int:id_equipe>', methods=['GET'])
-def get_joueur_by_id(id_equipe):
+def get_equipe_by_id(id_equipe):
     with Mongo2Client() as mongo_client:
         db_equipe = mongo_client.db['equipe']
         equipe = db_equipe.find_one({'_id': ObjectId(id_equipe)})

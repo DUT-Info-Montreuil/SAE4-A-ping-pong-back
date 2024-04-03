@@ -1,7 +1,6 @@
 from bson import ObjectId
 from flask import Blueprint, jsonify, request
 from mongo_client import Mongo2Client
-import random
 
 tournois_bp = Blueprint('tournoi_bp', __name__)
 
@@ -69,23 +68,6 @@ def delete_tournoi_by_id(id_tournoi):
             return jsonify({"message": "Le tournoi a été supprimé avec succès."})
         else:
             return jsonify({'message': 'Erreur lors de la suppression du tournoi'}), 404
-
-
-@tournois_bp.route('/randomiser_match', methods=['PUT'])
-def randomiser_match():
-    data_tournoi = request.json
-
-    with Mongo2Client() as mongo_client:
-        db_tournoi = mongo_client.db['tournoi']
-        matchs = data_tournoi.get('match', [])
-        random.shuffle(matchs)
-        data_tournoi['match'] = matchs
-        update = db_tournoi.update_one({'_id': ObjectId(data_tournoi['_id'])}, {'$set': data_tournoi})
-
-        if update.modified_count > 0:
-            return jsonify({"messsage": "Les matchs ont bien été randomiser"})
-        else:
-            return jsonify({"messsage": "Erreur lors de la requete"}), 404
 
 
 @tournois_bp.route('/<string:id_tournoi>/match/<string:id_match>', methods=['PUT'])
