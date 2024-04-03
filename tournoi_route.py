@@ -113,3 +113,38 @@ def update_score_match_tournoi(id_tournoi, id_match):
             return jsonify({"message": "Score du match mis à jour avec succès."})
         else:
             return jsonify({'message': 'Match non trouvé'}), 404
+
+
+@tournois_bp.route('/<string:id_tournoi>/match/<string:id_match>/fin', methods=['PUT'])
+def finir_match_tournoi(id_tournoi, id_match):
+    score_data = request.json
+    scoreJ1 = score_data.get('scoreJ1')
+    scoreJ2 = score_data.get('scoreJ2')
+
+    with Mongo2Client() as mongo_client:
+        db_tournoi = mongo_client.db['tournoi']
+        tournoi = db_tournoi.find_one({'_id': ObjectId(id_tournoi)})
+        if not tournoi:
+            return jsonify({'message': 'Tournoi non trouvé.'}), 404
+
+        matchs = tournoi.get('matchs', [])
+        updated_match = None
+        for match in matchs:
+            if str(match.get('_id')) == id_match:
+                match['scoreJ1'] = scoreJ1
+                match['scoreJ2'] = scoreJ2
+                match['resultat'] = 1
+
+                if scoreJ1 > scoreJ2:
+                    match['vainqueur'] = match['joueur_1']['nom'] + ' ' + match['joueur_1']['prenom']
+                else:
+                    match['vainqueur'] = match['joueur_2']['nom'] + ' ' + match['joueur_2']['prenom']
+
+                updated_match = match
+
+        if updated_match:
+            db_tournoi.update_one({'_id': ObjectId(id_tournoi), 'matchs._id': updated_match['_id']},
+                                  {'$set': {'matchs.$': updated_match}})
+            return jsonify({"message": "Match terminé avec succès.", "vainqueur": updated_match['vainqueur']})
+        else:
+            return jsonify({'message': f"Match avec l'id {id_match} non trouvé"}), 404
