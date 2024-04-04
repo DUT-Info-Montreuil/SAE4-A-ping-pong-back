@@ -149,7 +149,7 @@ def finir_match_tournoi(id_tournoi, id_match):
             return jsonify({'message': f"Match avec l'id {id_match} non trouvé"}), 404
 
 
-@tournois_bp.route('/ajouter_match/<string:id_tournoi>', methods=['POST'])
+@tournois_bp.route('/ajouter_match/<string:id_tournoi>', methods=['PUT'])
 def ajouter_match_tournoi(id_tournoi):
     data = request.json
     matchs_a_ajouter = data.get('matchs', [])
@@ -182,20 +182,20 @@ def determiner_gagnant_tournoi(tournoi):
         vainqueur = match.get('vainqueur')
 
         if vainqueur:
-            joueur_id = str(vainqueur['_id'])
+            joueur_id = vainqueur['_id']
             if joueur_id not in joueurs:
-                joueurs[joueur_id] = 0
+                joueurs[joueur_id] = vainqueur
 
-            joueurs[joueur_id] += 1
+            joueurs[joueur_id]['victoires'] = joueurs[joueur_id].get('victoires', 0) + 1
 
     max_victoires = 0
-    gagnant_id = None
-    for joueur_id, victoires in joueurs.items():
-        if victoires > max_victoires:
-            max_victoires = victoires
-            gagnant_id = joueur_id
+    gagnant = None
+    for joueur in joueurs.values():
+        if joueur.get('victoires') > max_victoires:
+            max_victoires = joueur['victoires']
+            gagnant = joueur
 
-    return gagnant_id
+    return gagnant
 
 
 @tournois_bp.route('/<string:id_tournoi>/gagnant', methods=['PUT'])
@@ -205,17 +205,14 @@ def mettre_a_jour_gagnant_tournoi(id_tournoi):
     if not tournoi:
         return jsonify({'message': 'Veuillez fournir les données du tournoi'}), 400
 
-    gagnant_id = determiner_gagnant_tournoi(tournoi)
+    gagnant = determiner_gagnant_tournoi(tournoi)
 
-    if not gagnant_id:
+    if not gagnant:
         return jsonify({'message': 'Aucun gagnant trouvé dans le tournoi'}), 404
 
     with Mongo2Client() as mongo_client:
         db_tournoi = mongo_client.db['tournoi']
-        result = db_tournoi.update_one(
-            {'_id': ObjectId(id_tournoi)},
-            {'$set': {'gagnant': ObjectId(gagnant_id)}}
-        )
+        result = db_tournoi.update_one({'_id': ObjectId(id_tournoi)}, {'$set': {'gagnant': gagnant}})
 
         if result.modified_count > 0:
             return jsonify({'message': 'Gagnant du tournoi mis à jour.'}), 200
