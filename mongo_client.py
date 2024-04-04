@@ -20,14 +20,3 @@ class Mongo2Client:
 
     def __exit__(self, type, value, traceback):
         self.client.close()
-
-
-if __name__ == '__main__':
-    mongo_client = Mongo2Client(db_name='Tournoi_Ping-pong')
-    joueurs = mongo_client.db['joueur'].count_documents({}) + 1
-    print(joueurs)
-
-    from datetime import date
-
-    today = date.today()
-    print("Today's date:", today)
