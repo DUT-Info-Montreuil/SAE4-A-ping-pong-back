@@ -141,3 +141,29 @@ def finir_match_tournoi(id_tournoi, id_match):
             return jsonify({"message": "Match terminé avec succès."})
         else:
             return jsonify({'message': f"Match avec l'id {id_match} non trouvé"}), 404
+
+
+@tournois_bp.route('/ajouter_match/<string:id_tournoi>', methods=['POST'])
+def ajouter_match_tournoi(id_tournoi):
+    data = request.json
+    matchs_a_ajouter = data.get('matchs', [])
+
+    if not matchs_a_ajouter:
+        return jsonify({"message": "Aucun match à ajouter."}), 400
+
+    with Mongo2Client() as mongo_client:
+        db_tournoi = mongo_client.db['tournoi']
+        tournoi = db_tournoi.find_one({'_id': ObjectId(id_tournoi)})
+
+        if not tournoi:
+            return jsonify({'message': f"Le tournoi d'identifiant {id_tournoi} n'existe pas."}), 404
+
+        tournoi_matchs = tournoi.get('matchs', [])
+        tournoi_matchs.extend(matchs_a_ajouter)
+
+        update_result = db_tournoi.update_one({'_id': ObjectId(id_tournoi)}, {'$set': {'matchs': tournoi_matchs}})
+
+        if update_result.modified_count > 0:
+            return jsonify({"message": "Les matchs ont été ajoutés au tournoi avec succès."})
+        else:
+            return jsonify({"message": "Erreur lors de l'ajout des matchs au tournoi."}), 500
