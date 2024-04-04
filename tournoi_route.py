@@ -196,3 +196,28 @@ def determiner_gagnant_tournoi(tournoi):
             gagnant_id = joueur_id
 
     return gagnant_id
+
+
+@tournois_bp.route('/<string:id_tournoi>/gagnant', methods=['PUT'])
+def mettre_a_jour_gagnant_tournoi(id_tournoi):
+    tournoi = request.json.get('tournoi')
+
+    if not tournoi:
+        return jsonify({'message': 'Veuillez fournir les données du tournoi'}), 400
+
+    gagnant_id = determiner_gagnant_tournoi(tournoi)
+
+    if not gagnant_id:
+        return jsonify({'message': 'Aucun gagnant trouvé dans le tournoi'}), 404
+
+    with Mongo2Client() as mongo_client:
+        db_tournoi = mongo_client.db['tournoi']
+        result = db_tournoi.update_one(
+            {'_id': ObjectId(id_tournoi)},
+            {'$set': {'gagnant': ObjectId(gagnant_id)}}
+        )
+
+        if result.modified_count > 0:
+            return jsonify({'message': 'Gagnant du tournoi mis à jour.'}), 200
+        else:
+            return jsonify({'message': 'Impossible de mettre à jour le gagnant du tournoi'}), 500
