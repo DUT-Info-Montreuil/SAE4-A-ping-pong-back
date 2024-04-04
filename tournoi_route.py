@@ -91,7 +91,8 @@ def update_score_match_tournoi(id_tournoi, id_match):
                 updated_match = match
 
         if updated_match:
-            db_tournoi.update_one({'_id': ObjectId(id_tournoi), 'matchs._id': updated_match['_id']}, {'$set': {'matchs.$': updated_match}})
+            db_tournoi.update_one({'_id': ObjectId(id_tournoi), 'matchs._id': updated_match['_id']},
+                                  {'$set': {'matchs.$': updated_match}})
             return jsonify({"message": "Score du match mis à jour avec succès."})
         else:
             return jsonify({'message': 'Match non trouvé'}), 404
@@ -126,17 +127,22 @@ def finir_match_tournoi(id_tournoi, id_match):
                 updated_match = match
 
         if updated_match:
-            db_tournoi.update_one({'_id': ObjectId(id_tournoi), 'matchs._id': updated_match['_id']}, {'$set': {'matchs.$': updated_match}})
+            db_tournoi.update_one({'_id': ObjectId(id_tournoi), 'matchs._id': updated_match['_id']},
+                                  {'$set': {'matchs.$': updated_match}})
 
             joueur_1 = updated_match.get('joueur_1', {})
             joueur_2 = updated_match.get('joueur_2', {})
             joueur_1_score_actuel = joueur_1.get('point')
             joueur_2_score_actuel = joueur_2.get('point')
 
-            db_tournoi.update_one({'_id': ObjectId(id_tournoi), 'joueurs._id': ObjectId(joueur_1['_id'])}, {'$inc': {'joueurs.$.point': joueur_1_score_actuel + scoreJ1}})
-            db_joueur.update_one({'_id': ObjectId(joueur_1['_id'])}, {'$inc': {'point': joueur_1_score_actuel + scoreJ1}})
-            db_tournoi.update_one({'_id': ObjectId(id_tournoi), 'joueurs._id': ObjectId(joueur_2['_id'])}, {'$inc': {'joueurs.$.point': joueur_2_score_actuel + scoreJ2}})
-            db_joueur.update_one({'_id': ObjectId(joueur_2['_id'])}, {'$inc': {'point': joueur_2_score_actuel + scoreJ2}})
+            db_tournoi.update_one({'_id': ObjectId(id_tournoi), 'joueurs._id': ObjectId(joueur_1['_id'])},
+                                  {'$inc': {'joueurs.$.point': joueur_1_score_actuel + scoreJ1}})
+            db_joueur.update_one({'_id': ObjectId(joueur_1['_id'])},
+                                 {'$inc': {'point': joueur_1_score_actuel + scoreJ1}})
+            db_tournoi.update_one({'_id': ObjectId(id_tournoi), 'joueurs._id': ObjectId(joueur_2['_id'])},
+                                  {'$inc': {'joueurs.$.point': joueur_2_score_actuel + scoreJ2}})
+            db_joueur.update_one({'_id': ObjectId(joueur_2['_id'])},
+                                 {'$inc': {'point': joueur_2_score_actuel + scoreJ2}})
 
             return jsonify({"message": "Match terminé avec succès."})
         else:
@@ -167,3 +173,26 @@ def ajouter_match_tournoi(id_tournoi):
             return jsonify({"message": "Les matchs ont été ajoutés au tournoi avec succès."})
         else:
             return jsonify({"message": "Erreur lors de l'ajout des matchs au tournoi."}), 500
+
+
+def determiner_gagnant_tournoi(tournoi):
+    joueurs = {}
+
+    for match in tournoi.get('matchs', []):
+        vainqueur = match.get('vainqueur')
+
+        if vainqueur:
+            joueur_id = str(vainqueur['_id'])
+            if joueur_id not in joueurs:
+                joueurs[joueur_id] = 0
+
+            joueurs[joueur_id] += 1
+
+    max_victoires = 0
+    gagnant_id = None
+    for joueur_id, victoires in joueurs.items():
+        if victoires > max_victoires:
+            max_victoires = victoires
+            gagnant_id = joueur_id
+
+    return gagnant_id
