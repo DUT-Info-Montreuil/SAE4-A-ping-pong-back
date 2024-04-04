@@ -89,8 +89,7 @@ def update_joueur_by_id(id_joueur):
         else:
             return jsonify({'message': 'Erreur lors de la mise à jour'}), 404
 
-
-@joueurs_bp.route('/add_fichier', methods=['PUT'])
+@joueurs_bp.route('/add_fichier', methods=['POST'])
 def add_joueurs_fichier():
     # Obtenir l'instance du client MongoDB
     print("Fichier reçu:", "fichier" in request.files)
@@ -108,7 +107,7 @@ def add_joueurs_fichier():
         fichier.seek(0)
         joueurs = []
         for row in csv.DictReader(io.StringIO(fichier.read().decode('utf-8'))):
-            categorie = [{'age': row['Age']}, {'niveau': row['Niveau']}]
+            categorie = {'age': row['Age'], 'niveau': row['Niveau']}
             try:
                 points = int(row['Points'])
             except ValueError:
@@ -139,7 +138,6 @@ def add_joueurs_fichier():
         mongo_client.close()
         return jsonify({"succès": False, "message": "Erreur lors de l'insertion des joueurs", "erreur": str(e)}), 500
 
-
 @joueurs_bp.route('/filtre', methods=['GET'])
 def get_joueurs_filtre():
     niveau = request.args.get('niveau', 'Mixte')
@@ -157,3 +155,4 @@ def get_joueurs_filtre():
             joueur['_id'] = str(joueur['_id'])
             joueurs_list.append(joueur)
         return jsonify(joueurs_list)
+

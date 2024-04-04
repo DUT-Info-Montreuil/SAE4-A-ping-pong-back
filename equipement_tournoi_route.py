@@ -1,6 +1,9 @@
 from bson import ObjectId
 from flask import Blueprint, jsonify, request
 from mongo_client import Mongo2Client
+from flask import Flask, request, jsonify
+from pymongo import MongoClient
+from bson import ObjectId
 
 equipement_tournoi_bp = Blueprint('equipement', __name__)
 
@@ -66,3 +69,6 @@ def update_equipement_by_id(id_equipement_tournoi):
             return jsonify({"True": "La mise à jour a bien été réalisée."})
         else:
             return jsonify({'False': 'Erreur lors de la mise à jour'}), 404
+
+
+
