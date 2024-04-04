@@ -108,7 +108,7 @@ def add_joueurs_fichier():
         fichier.seek(0)
         joueurs = []
         for row in csv.DictReader(io.StringIO(fichier.read().decode('utf-8'))):
-            categorie = [{'age': row['Age']}, {'niveau': row['Niveau']}]
+            categorie = {'age': row['Age'], 'niveau': row['Niveau']}
             try:
                 points = int(row['Points'])
             except ValueError:
