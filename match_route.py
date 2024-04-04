@@ -5,6 +5,8 @@ import random
 
 matchs_bp = Blueprint('matchs_bp', __name__)
 
+db_match = Mongo2Client().db['match']
+
 
 def conversion_objectid_en_string(matchs):
     matchs_list = []
@@ -17,61 +19,48 @@ def conversion_objectid_en_string(matchs):
 
 @matchs_bp.route('/', methods=['GET'])
 def get_all_matchs():
-    with Mongo2Client() as mongo_client:
-        db_match = mongo_client.db['match']
-        matchs = db_match.find()
-        match_list = conversion_objectid_en_string(matchs)
-        return jsonify(match_list)
+    matchs = db_match.find()
+    match_list = conversion_objectid_en_string(matchs)
+    return jsonify(match_list)
 
 
 @matchs_bp.route('/<string:id_match>', methods=['GET'])
 def get_match_by_id(id_match):
-    with Mongo2Client() as mongo_client:
-        db_match = mongo_client.db['match']
-        match = db_match.find_one({'_id': ObjectId(id_match)})
-        if match:
-            match['_id'] = str(match['_id'])
-            return jsonify(match)
-        else:
-            return jsonify({'erreur': f"le match d'identifiant {id_match} n'existe pas."}), 404
+    match = db_match.find_one({'_id': ObjectId(id_match)})
+    if match:
+        match['_id'] = str(match['_id'])
+        return jsonify(match)
+    else:
+        return jsonify({'erreur': f"le match d'identifiant {id_match} n'existe pas."}), 404
 
 
 @matchs_bp.route('/', methods=['POST'])
 def add_match():
     data = request.get_json()
-    with Mongo2Client() as mongo_client:
-        db_joueur = mongo_client.db['match']
-        insert_joueur = db_joueur.insert_one(data)
-        if insert_joueur:
-            return jsonify({"True": "La requete a bien été insérée"})
-        else:
-            return jsonify({"False": "Erreur lors de l'insertion"}), 404
+    insert_match = db_match.insert_one(data)
+    if insert_match:
+        return jsonify({"True": "La requete a bien été insérée"})
+    else:
+        return jsonify({"False": "Erreur lors de l'insertion"}), 404
 
 
 @matchs_bp.route('/<string:id_match>', methods=['DELETE'])
 def delete_match_by_id(id_match):
-    with Mongo2Client() as mongo_client:
-        db_match = mongo_client.db['match']
-        delete_match = db_match.delete_one({'_id': ObjectId(id_match)})
-
-        if delete_match:
-            return jsonify({"True": "La suppression a bien été réalisée."})
-        else:
-            return jsonify({'False': 'Erreur lors de la suppression'}), 404
+    delete_match = db_match.delete_one({'_id': ObjectId(id_match)})
+    if delete_match:
+        return jsonify({"True": "La suppression a bien été réalisée."})
+    else:
+        return jsonify({'False': 'Erreur lors de la suppression'}), 404
 
 
 @matchs_bp.route('/<string:id_match>', methods=['PUT'])
 def update_match_by_id(id_match):
     data = request.json
-
-    with Mongo2Client() as mongo_client:
-        db_match = mongo_client.db['match']
-        update_match = db_match.update_one({'_id': ObjectId(id_match)}, {'$set': data})
-
-        if update_match.modified_count > 0:
-            return jsonify({"True": "La mise à jour a bien été réalisée."})
-        else:
-            return jsonify({'False': 'Erreur lors de la mise à jour'}), 404
+    update_match = db_match.update_one({'_id': ObjectId(id_match)}, {'$set': data})
+    if update_match.modified_count > 0:
+        return jsonify({"True": "La mise à jour a bien été réalisée."})
+    else:
+        return jsonify({'False': 'Erreur lors de la mise à jour'}), 404
 
 
 @matchs_bp.route('/random_match', methods=['POST'])
@@ -118,13 +107,10 @@ def create_random_matches():
             }
             liste_matchs.append(match)
 
-    with Mongo2Client() as mongo_client:
-        db_match = mongo_client.db['match']
-        insert_matchs = db_match.insert_many(liste_matchs)
-
-        if insert_matchs:
-            matchs_inserer = db_match.find({'_id': {'$in': insert_matchs.inserted_ids}})
-            matchs = conversion_objectid_en_string([match for match in matchs_inserer])
-            return jsonify({"success": "Les matchs ont été créés avec succès.", "matchs": matchs})
-        else:
-            return jsonify({"error": "Erreur lors de la création des matchs."}), 500
+    insert_matchs = db_match.insert_many(liste_matchs)
+    if insert_matchs:
+        matchs_inserer = db_match.find({'_id': {'$in': insert_matchs.inserted_ids}})
+        matchs = conversion_objectid_en_string([match for match in matchs_inserer])
+        return jsonify({"success": "Les matchs ont été créés avec succès.", "matchs": matchs})
+    else:
+        return jsonify({"error": "Erreur lors de la création des matchs."})
