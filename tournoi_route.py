@@ -76,7 +76,7 @@ def update_score_match_tournoi(id_tournoi, id_match):
             updated_match = match
     if updated_match:
         db_tournoi.update_one({'_id': ObjectId(id_tournoi), 'matchs._id': updated_match['_id']},
-                                {'$set': {'matchs.$': updated_match}})
+                              {'$set': {'matchs.$': updated_match}})
         return jsonify({"message": "Score du match mis à jour avec succès."})
     else:
         return jsonify({'message': 'Match non trouvé'}), 404
@@ -88,49 +88,41 @@ def finir_match_tournoi(id_tournoi, id_match):
     scoreJ1 = score_data.get('scoreJ1')
     scoreJ2 = score_data.get('scoreJ2')
 
-    with Mongo2Client() as mongo_client:
-        db_tournoi = mongo_client.db['tournoi']
-        db_joueur = mongo_client.db['joueur']
-        tournoi = db_tournoi.find_one({'_id': ObjectId(id_tournoi)})
-        if not tournoi:
-            return jsonify({'message': 'Tournoi non trouvé.'}), 404
+    tournoi = db_tournoi.find_one({'_id': ObjectId(id_tournoi)})
+    if not tournoi:
+        return jsonify({'message': 'Tournoi non trouvé.'}), 404
 
-        matchs = tournoi.get('matchs', [])
-        updated_match = None
-        for match in matchs:
-            if str(match.get('_id')) == id_match:
-                match['scoreJ1'] = scoreJ1
-                match['scoreJ2'] = scoreJ2
-                match['resultat'] = 1
+    matchs = tournoi.get('matchs', [])
+    for match in matchs:
+        if str(match.get('_id')) == id_match:
+            match['scoreJ1'] = scoreJ1
+            match['scoreJ2'] = scoreJ2
+            match['resultat'] = 1
 
-                if scoreJ1 > scoreJ2:
-                    match['vainqueur'] = match['joueur_1']
-                else:
-                    match['vainqueur'] = match['joueur_2']
+            if scoreJ1 > scoreJ2:
+                match['vainqueur'] = match['joueur_1']
+            else:
+                match['vainqueur'] = match['joueur_2']
 
-                updated_match = match
+            updated_match = match
 
-        if updated_match:
-            db_tournoi.update_one({'_id': ObjectId(id_tournoi), 'matchs._id': updated_match['_id']},
-                                  {'$set': {'matchs.$': updated_match}})
+            if updated_match:
+                db_tournoi.update_one({'_id': ObjectId(id_tournoi), 'matchs._id': updated_match['_id']},
+                                      {'$set': {'matchs.$': updated_match}})
 
-            joueur_1 = updated_match.get('joueur_1', {})
-            joueur_2 = updated_match.get('joueur_2', {})
-            joueur_1_score_actuel = joueur_1.get('point')
-            joueur_2_score_actuel = joueur_2.get('point')
+                joueur_1 = updated_match.get('joueur_1', {})
+                joueur_2 = updated_match.get('joueur_2', {})
+                joueur_1_score_actuel = joueur_1.get('point')
+                joueur_2_score_actuel = joueur_2.get('point')
 
-            db_tournoi.update_one({'_id': ObjectId(id_tournoi), 'joueurs._id': ObjectId(joueur_1['_id'])},
-                                  {'$inc': {'joueurs.$.point': joueur_1_score_actuel + scoreJ1}})
-            db_joueur.update_one({'_id': ObjectId(joueur_1['_id'])},
-                                 {'$inc': {'point': joueur_1_score_actuel + scoreJ1}})
-            db_tournoi.update_one({'_id': ObjectId(id_tournoi), 'joueurs._id': ObjectId(joueur_2['_id'])},
-                                  {'$inc': {'joueurs.$.point': joueur_2_score_actuel + scoreJ2}})
-            db_joueur.update_one({'_id': ObjectId(joueur_2['_id'])},
-                                 {'$inc': {'point': joueur_2_score_actuel + scoreJ2}})
+                db_tournoi.update_one({'_id': ObjectId(id_tournoi), 'joueurs._id': ObjectId(joueur_1['_id'])},
+                                      {'$inc': {'joueurs.$.point': joueur_1_score_actuel + scoreJ1}})
+                db_tournoi.update_one({'_id': ObjectId(id_tournoi), 'joueurs._id': ObjectId(joueur_2['_id'])},
+                                      {'$inc': {'joueurs.$.point': joueur_2_score_actuel + scoreJ2}})
 
-            return jsonify({"message": "Match terminé avec succès."})
-        else:
-            return jsonify({'message': f"Match avec l'id {id_match} non trouvé"}), 404
+                return jsonify({"message": "Match terminé avec succès."})
+            else:
+                return jsonify({'message': f"Match avec l'id {id_match} non trouvé"}), 404
 
 
 @tournois_bp.route('/ajouter_match/<string:id_tournoi>', methods=['PUT'])
@@ -141,22 +133,20 @@ def ajouter_match_tournoi(id_tournoi):
     if not matchs_a_ajouter:
         return jsonify({"message": "Aucun match à ajouter."}), 400
 
-    with Mongo2Client() as mongo_client:
-        db_tournoi = mongo_client.db['tournoi']
-        tournoi = db_tournoi.find_one({'_id': ObjectId(id_tournoi)})
+    tournoi = db_tournoi.find_one({'_id': ObjectId(id_tournoi)})
 
-        if not tournoi:
-            return jsonify({'message': f"Le tournoi d'identifiant {id_tournoi} n'existe pas."}), 404
+    if not tournoi:
+        return jsonify({'message': f"Le tournoi d'identifiant {id_tournoi} n'existe pas."}), 404
 
-        tournoi_matchs = tournoi.get('matchs', [])
-        tournoi_matchs.extend(matchs_a_ajouter)
+    tournoi_matchs = tournoi.get('matchs', [])
+    tournoi_matchs.extend(matchs_a_ajouter)
 
-        update_result = db_tournoi.update_one({'_id': ObjectId(id_tournoi)}, {'$set': {'matchs': tournoi_matchs}})
+    update_result = db_tournoi.update_one({'_id': ObjectId(id_tournoi)}, {'$set': {'matchs': tournoi_matchs}})
 
-        if update_result.modified_count > 0:
-            return jsonify({"message": "Les matchs ont été ajoutés au tournoi avec succès."})
-        else:
-            return jsonify({"message": "Erreur lors de l'ajout des matchs au tournoi."}), 500
+    if update_result.modified_count > 0:
+        return jsonify({"message": "Les matchs ont été ajoutés au tournoi avec succès."})
+    else:
+        return jsonify({"message": "Erreur lors de l'ajout des matchs au tournoi."}), 500
 
 
 def determiner_gagnant_tournoi(tournoi):
@@ -194,11 +184,9 @@ def mettre_a_jour_gagnant_tournoi(id_tournoi):
     if not gagnant:
         return jsonify({'message': 'Aucun gagnant trouvé dans le tournoi'}), 404
 
-    with Mongo2Client() as mongo_client:
-        db_tournoi = mongo_client.db['tournoi']
-        result = db_tournoi.update_one({'_id': ObjectId(id_tournoi)}, {'$set': {'gagnant': gagnant}})
+    result = db_tournoi.update_one({'_id': ObjectId(id_tournoi)}, {'$set': {'gagnant': gagnant}})
 
-        if result.modified_count > 0:
-            return jsonify({'message': 'Gagnant du tournoi mis à jour.'}), 200
-        else:
-            return jsonify({'message': 'Impossible de mettre à jour le gagnant du tournoi'}), 500
+    if result.modified_count > 0:
+        return jsonify({'message': 'Gagnant du tournoi mis à jour.'}), 200
+    else:
+        return jsonify({'message': 'Impossible de mettre à jour le gagnant du tournoi'}), 500
