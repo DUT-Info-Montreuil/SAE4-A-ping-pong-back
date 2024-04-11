@@ -84,16 +84,13 @@ def update_joueur_by_id(id_joueur):
 
 @joueurs_bp.route('/add_fichier', methods=['POST'])
 def add_joueurs_fichier():
-    # Obtenir l'instance du client MongoDB
     print("Fichier reçu:", "fichier" in request.files)
     fichier = request.files['fichier']
 
     if not fichier:
-        # mongo_client.close()
         return jsonify({"succès": False, "message": "Aucun fichier fourni"}), 400
     try:
         if not fichier.filename.endswith('.csv'):
-            # mongo_client.close()
             return jsonify({"succès": False, "message": "Le fichier n'est pas un CSV"}), 400
 
         fichier.seek(0)
