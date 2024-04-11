@@ -13,7 +13,7 @@ class SingletonMeta(type):
 
 
 class Mongo2Client(metaclass=SingletonMeta):
-    def __init__(self, host='localhost', port=27017, db_name='Tournoi_Ping-pong', username='luc', password=None):
+    def __init__(self, host='localhost', port=27017, db_name='tournoi_ping_pong', username='luc', password=None):
         try:
             if username and password:
                 uri = f"mongodb://{username}:{password}@{host}:{port}/{db_name}"
