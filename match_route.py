@@ -2,8 +2,20 @@ from bson import ObjectId
 from flask import Blueprint, jsonify, request
 from mongo_client import Mongo2Client
 import random
+from flask_expects_json import expects_json
 
 matchs_bp = Blueprint('matchs_bp', __name__)
+
+match_schema = {
+    'type': 'object',
+    'properties': {
+        'duree': {'type': 'integer'},
+        'joueur_1': {'type': 'object'},
+        'joueur_2': {'type': 'object'},
+        'resultat': {'type': 'integer'}
+    },
+    'required': ['duree', 'joueur_1', 'joueur_2', 'resultat']
+}
 
 db_match = Mongo2Client().db['match']
 
@@ -35,6 +47,7 @@ def get_match_by_id(id_match):
 
 
 @matchs_bp.route('/', methods=['POST'])
+@expects_json(match_schema)
 def add_match():
     data = request.get_json()
     insert_match = db_match.insert_one(data)

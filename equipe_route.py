@@ -1,11 +1,25 @@
 from bson import ObjectId
 from flask import Blueprint, jsonify, request
 from mongo_client import Mongo2Client
+from flask_expects_json import expects_json
 
 equipes_bp = Blueprint('equipes_bp', __name__)
 
 
+equipe_schema = {
+    'type': 'object',
+    'properties': {
+        'joueurs': {
+            'type': 'array'
+        },
+        'type': {'type': 'string'}
+    },
+    'required': ['joueurs', 'type']
+}
+
+
 db_equipe = Mongo2Client().db['equipe']
+
 
 @equipes_bp.route('/', methods=['GET'])
 def get_all_equipes():
@@ -28,6 +42,7 @@ def get_equipe_by_id(id_equipe):
 
 
 @equipes_bp.route('/', methods=['POST'])
+@expects_json(equipe_schema)
 def add_equipes():
     data = request.get_json()
     insert_equipe = db_equipe.insert_one(data)

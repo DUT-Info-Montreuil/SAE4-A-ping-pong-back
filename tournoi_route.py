@@ -1,8 +1,20 @@
 from bson import ObjectId
 from flask import Blueprint, jsonify, request
 from mongo_client import Mongo2Client
+from flask_expects_json import expects_json
 
 tournois_bp = Blueprint('tournoi_bp', __name__)
+
+schema_tournoi = {
+    'type': 'object',
+    'properties': {
+        'date': {'type': 'string', 'format': 'date'},
+        'equipement': {'type': 'object'},
+        'matchs': {'type': 'array'},
+        'status': {'type': 'boolean'}
+    },
+    'required': ['date', 'equipement', 'matchs', 'status']
+}
 
 db_tournoi = Mongo2Client().db['tournoi']
 
@@ -18,6 +30,7 @@ def get_all_tournois():
 
 
 @tournois_bp.route('/', methods=['POST'])
+@expects_json(schema_tournoi)
 def add_tournoi():
     tournoi_data = request.json
     insert_tournoi = db_tournoi.insert_one(tournoi_data)
