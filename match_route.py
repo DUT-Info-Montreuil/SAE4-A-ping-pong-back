@@ -74,9 +74,6 @@ def create_random_matches():
     if len(joueurs_tournoi) == 0:
         return jsonify({"error": "Aucun joueur(s) assigné pour un match."}), 400
 
-    if len(joueurs_tournoi) % 2 != 0:
-        return jsonify({"error": "Nombre impair de joueurs."}), 400
-
     if not equipement:
         return jsonify({"error": "Équipement non fourni."}), 400
 
@@ -102,8 +99,6 @@ def create_random_matches():
                 'joueur_2': joueurs_tournoi[i + 1],
                 'duree': 5,
                 'resultat': 0,
-                'scoreJ1': 0,
-                'scoreJ2': 0
             }
             liste_matchs.append(match)
 

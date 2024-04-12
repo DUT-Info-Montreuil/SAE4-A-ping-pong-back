@@ -144,7 +144,7 @@ def ajouter_match_tournoi(id_tournoi):
     update_result = db_tournoi.update_one({'_id': ObjectId(id_tournoi)}, {'$set': {'matchs': tournoi_matchs}})
 
     if update_result.modified_count > 0:
-        return jsonify({"message": "Les matchs ont été ajoutés au tournoi avec succès."})
+        return jsonify({"message": "Les matchs ont été ajoutés au tournoi avec succès."}), 200
     else:
         return jsonify({"message": "Erreur lors de l'ajout des matchs au tournoi."}), 500
 
